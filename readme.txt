@@ -13,17 +13,17 @@ Travelmap helps you show your travels on a Google map in any post or page. Add p
 
 Add arrival dates to automatically show your current position and where you have been so far. Each place can be linked to a custom url - for example a blog post, wikipedia entry or Flickr album. Geocoding is done automatically based on city and country - but if you need to you can override with your own coordinates. 
 
-[See Travelmap in use](http://travelingswede.com/my-travel-map/ "A demo of Travelmap using my travels")
+[See Travelmap in use](http://travelingswede.com/my-travel-map/ "A demo of Travelmap using my travels")  
 [The plugin homepage](http://travelingswede.com/travelmap/)
 
 == Installation ==
 
 1. Upload `plugin-name.php` to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Place shortcodes in the posts or pages where you want to show the map or list:
-   For the map (height of map in pixels):
-   `[travelmap-map height=400]`
-   For the list:
+1. Place shortcodes in the posts or pages where you want to show the map or list:  
+   For the map (height of map in pixels):  
+   `[travelmap-map height=400]`  
+   For the list:  
    `[travelmap-list]`
 1. Add places you want to show. 
 
