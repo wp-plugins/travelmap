@@ -1,0 +1,65 @@
+/* Public facing styles */
+#travelmap-list {
+	border-collapse:collapse;
+	width:100%;
+	margin-bottom:1.5em;
+}
+#travelmap-list th, td {
+	padding:2px 8px 2px 0px;
+	text-align:left;
+}
+#travelmap-list th {
+	border-bottom:dotted #CCC 1px;
+}
+#travelmap-list .present td {
+	border-top:dotted #CCC 1px;
+	border-bottom:dotted #CCC 1px;
+}
+#travelmap-list .present td:first-child {
+	background:url(img/bullet_star.png) no-repeat 12px center;
+	width:24px;
+}
+
+/* Admin styles */
+#travelmap-admin-table {
+	margin-bottom:.8em;
+	background-color:#FFFFEB;
+}
+#travelmap-admin-table td {
+	line-height:26px;
+	vertical-align:middle;
+	background-color:#FFF;
+}
+#travelmap-admin-table .handle {
+	width:16px;
+	padding-right:0px;
+}
+#travelmap-admin-table .handle .image {
+	display:inline-block;
+	height:16px;
+	width:16px;
+	background:url(img/transform_move.png) no-repeat center;
+}
+#travelmap-admin-table .city {
+	width:18%;
+}
+#travelmap-admin-table .country {
+	width:18%;
+}
+#travelmap-admin-table .url {
+}
+#travelmap-admin-table .lat, #travelmap-admin-table .lng, #travelmap-admin-table .arrival {
+	width:8em;
+}
+#travelmap-admin-table .buttons {
+	width:110px;
+}
+#travelmap-admin-table input {
+	width:100%;
+	margin:0;
+	vertical-align:middle;
+}
+#travelmap-admin-table a.delete {
+	font-size:80%;
+	margin-left:10px;
+}
