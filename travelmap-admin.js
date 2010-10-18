@@ -1,17 +1,17 @@
 function travelmap_init() {
-	
+
 	// Abort if we are not on plugin page
 	if (adminpage != 'settings_page_travelmap-options') return;
-	
+
 	// Detect edit row clicks
 	jQuery('#travelmap-admin-table .edit.button-secondary').live('click', function() {
-	
+
 		// Abort if another row is already in edit mode
 		if (jQuery('#travelmap-admin-table .button-primary').length > 0) return false;
-		
+
 		// Find row of clicked button
 		var row = jQuery(this).closest('tr');
-		
+
 		travelmap_edit_row(row);
 		return false;
 	});
@@ -19,10 +19,10 @@ function travelmap_init() {
 
 	// Detect new rows
 	jQuery('#add-location').live('click', function() {
-																  
+
 		// Abort if another row is already in edit mode
 		if (jQuery('#travelmap-admin-table .button-primary').length > 0) return false;
-																  
+
 		jQuery('#travelmap-admin-table').append(
 			'<tr>'+
 				'<td class="handle"><span class="image"></span></td>'+
@@ -32,17 +32,18 @@ function travelmap_init() {
 				'<td class="arrival"><input type="text" /></td>'+
 				'<td class="lat"><input type="text" /></td>'+
 				'<td class="lng"><input type="text" /></td>'+
-				'<td class="buttons"><a class="button-primary edit" href="#" title="Edit row">Save</a> <a class="delete" href="#" title="Delete row">Delete</a></td>'+
+				'<td class="buttons1"><a class="button-primary edit" href="#" title="Save row">Save</a></td>'+
+				'<td class="buttons2"<a class="delete" href="#" title="Delete row">Delete</a></td>'+
 			'</tr>'
 		);
 
 		return false;
 	});
-	
-	
+
+
 	// Detect save clicks
 	jQuery('#travelmap-admin-table .edit.button-primary').live('click', function() {
-		
+
 		// Find row of clicked button
 		var row = jQuery(this).closest('tr');
 
@@ -53,10 +54,10 @@ function travelmap_init() {
 
 	// Detect delete clicks
 	jQuery('#travelmap-admin-table .delete').live('click', function() {
-		
+
 		// Find row of clicked button
 		jQuery(this).closest('tr').remove();
-		
+
 		travelmap_save_table();
 		return false;
 	});
@@ -83,30 +84,33 @@ function travelmap_init() {
 			return $helper;
 		},
 	});
-	
-	
 
-	
+
+
+
 }
 
 
 function travelmap_edit_row(row) {
-    jQuery('td', row).not(':first, :last').each(function() {
+    jQuery('td', row).not(':first, :eq(7), :eq(8)').each(function() {
          jQuery(this).html('<input type="text" value="' + jQuery(this).html() + '" />');
     });
 	 jQuery('.edit.button-secondary', row).toggleClass('button-secondary button-primary').text('Save');
+
+	// Load datepicker
+	jQuery(".arrival input").datepicker({dateFormat: 'yy-mm-dd', duration: 'fast'});
 
 	 // TODO: Save previous info for cancel/esc
 }
 
 
 function travelmap_exit_row_editing(row) {
-	jQuery('td', row).not(':first, :last').each(function() {
+	jQuery('td', row).not(':first, :eq(7), :eq(8)').each(function() {
          jQuery(this).text(
 				jQuery('input', this).attr('value')
 			);
 	});
-	
+
 	var lat = jQuery("td:eq(5)", row).text();
 	var lng = jQuery("td:eq(6)", row).text();
 
@@ -128,7 +132,7 @@ function travelmap_save_table() {
 
 	var places = '';
 	nonce = jQuery("#travelmap-admin-table thead").attr('class');
-	
+
 	jQuery("#travelmap-admin-table tbody > tr").each(function (i, tr) {
 		places += jQuery("td:eq(1)", this).text()+',';
 		places += jQuery("td:eq(2)", this).text()+',';
@@ -137,13 +141,13 @@ function travelmap_save_table() {
 		places += jQuery("td:eq(5)", this).text()+',';
 		places += jQuery("td:eq(6)", this).text()+';';
 	});
-	
+
 	var data = {
 		action: 'travelmap_ajax_save',
 		places: places,
 		nonce: nonce
 	};
-	
+
 	jQuery.ajax({
 		type: 'POST',
 		url: ajaxurl,

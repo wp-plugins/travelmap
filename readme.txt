@@ -3,7 +3,7 @@ Contributors: mediascreen
 Tags: travel,map,maps,travel blog,travel plan,Google maps,geocoding,location,round the world trip
 Requires at least: 2.7
 Tested up to: 3.0.1
-Stable tag: 1.1
+Stable tag: 1.2
 
 Generates a map of your travels in any post or page based on a list of places.
 
@@ -11,7 +11,7 @@ Generates a map of your travels in any post or page based on a list of places.
 
 Travelmap helps you show your travels on a Google map in any post or page. Add places you have visited or plan to visit to show them connected on a world map.
 
-Add arrival dates to automatically show your current position and where you have been so far. Each place can be linked to a custom url - for example a blog post, wikipedia entry or Flickr album. Geocoding is done automatically based on city and country - but if you need to you can override with your own coordinates. 
+Add arrival dates to automatically show your current position and where you have been so far. Each place can be linked to a custom url - for example a blog post, wikipedia entry or Flickr album. Geocoding is done automatically based on city and country - but if you need to you can override with your own coordinates.
 
 [See Travelmap in use](http://travelingswede.com/my-travel-map/ "A demo of Travelmap using my travels")  
 [The plugin homepage](http://travelingswede.com/travelmap/)
@@ -25,9 +25,14 @@ Add arrival dates to automatically show your current position and where you have
    `[travelmap-map height=400]`  
    For the list:  
    `[travelmap-list]`
-1. Add places you want to show. 
+1. Add places you want to show.
 
 == Changelog ==
+
+= 1.2 =
+* Added jQuery-ui datepicker to date field
+* Improved layout stability of admin table
+* Changed standard colors for markers and lines
 
 = 1.1 =
 * Fixed race condition that sometimes saved before geocoding

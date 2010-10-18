@@ -3,7 +3,7 @@
 Plugin Name: Travelmap
 Plugin URI: http://travelingswede.com/travelmap/
 Description: Shows your travel plans as a map
-Version: 1.1
+Version: 1.2
 Author: Marcus Andersson
 Author URI: http://travelingswede.com
 License: GPL2
@@ -31,7 +31,7 @@ function travelmap_show_map( $atts ) {
 	<?php
 
 	// Limits script output only to pages where shortcode is used
-	global $travel_shortcode_used; 
+	global $travel_shortcode_used;
 	$travel_shortcode_used = true;
 
 	// Returns the html required for the map
@@ -44,33 +44,33 @@ function travelmap_show_list() {
 
 	$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
 	$i = 0;
-	$letters = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';	
+	$letters = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';
 	$list = '<tr><th></th><th>Destination</th><th>Arrival</th></tr>';
-	
+
 	if ( ! is_array($places) )
 		return;
-		
+
 	foreach ( $places as $place ) {
-		
+
 		$printdate = ( !empty( $place['arrival'] ) ) ? date_i18n( "F j, Y", strtotime( $place['arrival'] ) ) : '-';
-		
+
 		if ( !empty( $place['url'] ) ) {
 			$printplace = '<a href="' . $place['url'] . '">' . $place['city'] . ', ' . $place['country'] . '</a>';
 		} else {
 			$printplace = $place['city'] . ', ' . $place['country'];
 		}
-		
+
 		// TODO: write out days in each place
-		// Om denna har datum, kolla om i+1 har datum 
+		// Om denna har datum, kolla om i+1 har datum
 		// Ta fram skillnaden mellan båda strtotime som dagar
-		
+
 		$list .= '
 			<tr class="' . $place['status'] . '">
 				<td>' . $letters[$i] . '</td>
 				<td>' . $printplace . '</td>
 				<td>' . $printdate  . '</td>
 			</tr>';
-		
+
 		$i++;
 	}
 
@@ -79,14 +79,14 @@ function travelmap_show_list() {
 
 
 function travelmap_print_js() {
-	
+
 	global $travel_shortcode_used;
 	if ( ! $travel_shortcode_used )
 		return;
- 
+
 	wp_register_script( 'google-maps', 'http://maps.google.com/maps/api/js?sensor=false', false, false, true );
 	wp_print_scripts( 'google-maps');
- 
+
 	wp_register_script( 'travelmap', plugins_url( 'travelmap.js', __FILE__ ), false, false, true );
 	wp_print_scripts( 'travelmap' );
 }
@@ -99,19 +99,22 @@ function travelmap_menu() {
 
 
 function travelmap_admin_init() {
-	
+
 	if ( $_GET['page'] !== 'travelmap-options')
 		return;
-	
+
 	// Include javascript
 	wp_enqueue_script( 'jquery-ui-sortable' );
-	
+
+	wp_register_script( 'datepicker', plugins_url( 'datepicker.js', __FILE__ ), false, false, true );
+	wp_enqueue_script( 'datepicker');
+
 	wp_register_script( 'google-maps', 'http://maps.google.com/maps/api/js?sensor=false', false, false, true );
 	wp_enqueue_script( 'google-maps');
-	
+
 	wp_register_script( 'travelmap_admin', plugins_url( 'travelmap-admin.js', __FILE__ ), false, false, true );
 	wp_enqueue_script( 'travelmap_admin' );
-	
+
 	// Register settings
 	register_setting( 'travelmap_settings', 'travelmap_data', 'travelmap_textarea_to_array' );
 }
@@ -128,9 +131,7 @@ function travelmap_options() {
 <div class="wrap">
 	<div class="icon32" id="icon-options-general"></div>
 	<h2>Travelmap destinations</h2>
-	<p>Add locations to show them on your map.</p>
-	<p>Only <em>city</em> and <em>country</em> are obligatory.</p>
-	<p>To automatically show where you are right now you need to fill in <em>arrival</em> date in the following format <strong>YYYY-MM-DD</strong>.</p>
+	<p>Add locations to show them on your map. Only <em>city</em> and <em>country</em> are obligatory. To automatically show where you are right now you need to fill in <em>arrival</em> date.</p>
 	<p>If you supply an <em>URL</em>, the city and country in the list will be linked. It needs to be a full URL (start with http://). Use it to link to, for example, a travel report, Wikipedia article or photo album.</p>
 	<p>Leave <em>latitude</em> and <em>longitude</em> empty to geocode the location automatically when you save. You should only input your own values if there is something wrong with the geocoding.</p>
 	<p>To show your map or list you insert shortcodes in your post or page.<br />
@@ -138,7 +139,8 @@ function travelmap_options() {
    <code>[travelmap-map height=400]</code><br />
    For the list:<br />
    <code>[travelmap-list]</code></p>
-	
+	<p><a href="http://travelingswede.com/travelmap/">Plugin homepage</a></p>
+
 	<table id="travelmap-admin-table" class="widefat" cellspacing="0">
 		<thead class="<?php echo wp_create_nonce( 'travelmap' );?>">
 			<tr>
@@ -149,7 +151,8 @@ function travelmap_options() {
 				<th scope="col" class="arrival manage-column">Arrival</th>
 				<th scope="col" class="lat manage-column">Latitude</th>
 				<th scope="col" class="lng manage-column">Longitude</th>
-				<th scope="col" class="buttons manage-column"></th>
+				<th scope="col" class="buttons1 manage-column"></th>
+				<th scope="col" class="buttons2 manage-column"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -157,7 +160,7 @@ function travelmap_options() {
 			$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
 			if ( is_array($places) ) {
 				foreach ( $places as $place ) {
-					echo 
+					echo
 					'<tr class="' . $place['status'] . '">
 						<td class="handle"><span class="image"></span></td>
 						<td class="city">' . $place['city'] . '</td>
@@ -166,7 +169,8 @@ function travelmap_options() {
 						<td class="arrival">' . $place['arrival'] . '</td>
 						<td class="lat">' . $place['lat'] . '</td>
 						<td class="lng">' . $place['lng'] . '</td>
-						<td class="buttons"><a class="button-secondary edit" href="#" title="Edit row">Edit</a> <a class="delete" href="#" title="Delete row">Delete</a></td>
+						<td class="buttons1"><a class="button-secondary edit" href="#" title="Edit row">Edit</a></td>
+						<td class="buttons2"<a class="delete" href="#" title="Delete row">Delete</a></td>
 					</tr>';
 				}
 			}
@@ -180,7 +184,7 @@ function travelmap_options() {
 
 
 function travelmap_ajax_save() {
-	
+
 	// Check nonce
 	if ( ! wp_verify_nonce($_POST['nonce'], 'travelmap') ) {
 		header( "Status: 401 Unauthorized" );
@@ -190,7 +194,7 @@ function travelmap_ajax_save() {
 	if( update_option( 'travelmap_data', $_POST['places'] ) ) {
 		$response = 'updated';
 	} else {
-		$response = 'unchanged';	
+		$response = 'unchanged';
 	}
 
 	// response output
@@ -202,7 +206,7 @@ function travelmap_ajax_save() {
 
 function travelmap_string_to_array( $input ) {
 	$input = trim( $input, " ;\n" );
-	if ( empty($input) ) 
+	if ( empty($input) )
 		return false;
 	$rows = explode( ";", $input );
 
@@ -241,13 +245,15 @@ function travelmap_get_date_status( $date, $prevStatus = 'past') {
 
 
 function travelmap_add_stylesheet() {
+	wp_register_style( 'jquery-ui','http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' );
 	wp_register_style( 'travelmap', travelmap_get_plugin_path() . 'screen.css' );
+	wp_enqueue_style( 'jquery-ui' );
 	wp_enqueue_style( 'travelmap' );
 }
 
 
 function travelmap_get_plugin_path() {
-	return WP_PLUGIN_URL . '/' . str_replace( basename( __FILE__ ), "", plugin_basename( __FILE__ ) ); 
+	return WP_PLUGIN_URL . '/' . str_replace( basename( __FILE__ ), "", plugin_basename( __FILE__ ) );
 }
 
 
@@ -258,7 +264,7 @@ add_action( 'wp_print_styles', 'travelmap_add_stylesheet' );
 add_action( 'wp_footer', 'travelmap_print_js' );
 add_action( 'admin_menu', 'travelmap_menu' );
 add_action( 'admin_init', 'travelmap_admin_init' );
-add_action( 'admin_print_styles', 'travelmap_add_stylesheet');	
+add_action( 'admin_print_styles', 'travelmap_add_stylesheet');
 
 add_action( 'wp_ajax_nopriv_travelmap_ajax_save', 'travelmap_ajax_save' );
 add_action( 'wp_ajax_travelmap_ajax_save', 'travelmap_ajax_save' );

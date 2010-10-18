@@ -41,18 +41,29 @@
 	background:url(img/transform_move.png) no-repeat center;
 }
 #travelmap-admin-table .city {
-	width:18%;
+	width:17%;
+	padding-right:2px;
 }
 #travelmap-admin-table .country {
-	width:18%;
+	width:15%;
+	padding-right:2px;
 }
 #travelmap-admin-table .url {
+	padding-right:2px;
 }
 #travelmap-admin-table .lat, #travelmap-admin-table .lng, #travelmap-admin-table .arrival {
-	width:8em;
+	width:7.6em;
+	padding-right:2px;
 }
-#travelmap-admin-table .buttons {
-	width:110px;
+#travelmap-admin-table .buttons1 {
+	width:8.5em;
+	padding-left:2px;
+	padding-right:0px;
+}
+#travelmap-admin-table .buttons2 {
+	width:3em;
+	padding-left:0px;
+	padding-right:2px;
 }
 #travelmap-admin-table input {
 	width:100%;
@@ -61,5 +72,8 @@
 }
 #travelmap-admin-table a.delete {
 	font-size:80%;
-	margin-left:10px;
+}
+
+.ui-datepicker, .ui-datepicker td {
+	font-size:10px;
 }
