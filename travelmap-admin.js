@@ -26,6 +26,7 @@ function travelmap_init() {
 		jQuery('#travelmap-admin-table').append(
 			'<tr>'+
 				'<td class="handle"><span class="image"></span></td>'+
+				'<td class="count"></td>'+
 				'<td class="city"><input type="text" /></td>'+
 				'<td class="country"><input type="text" /></td>'+
 				'<td class="url"><input type="text" /></td>'+
@@ -36,6 +37,8 @@ function travelmap_init() {
 				'<td class="buttons2"<a class="delete" href="#" title="Delete row">Delete</a></td>'+
 			'</tr>'
 		);
+
+		travelmap_refresh_count()
 
 		return false;
 	});
@@ -72,6 +75,7 @@ function travelmap_init() {
 		axis: 'y',
 		tolerance: 'pointer',
 		update: function(event, ui) {
+			travelmap_refresh_count()
 			travelmap_save_table();
 		},
 		helper: function(e, tr)	{
@@ -91,8 +95,17 @@ function travelmap_init() {
 }
 
 
+function travelmap_refresh_count() {
+	var i = 1;
+	jQuery('#travelmap-admin-table tbody td.count').each(function(){
+		jQuery(this).text(i);
+		i++;
+	});
+}
+
+
 function travelmap_edit_row(row) {
-    jQuery('td', row).not(':first, :eq(7), :eq(8)').each(function() {
+    jQuery('td', row).not(':eq(0), :eq(1), :eq(8), :eq(9)').each(function() {
          jQuery(this).html('<input type="text" value="' + jQuery(this).html() + '" />');
     });
 	 jQuery('.edit.button-secondary', row).toggleClass('button-secondary button-primary').text('Save');
@@ -105,14 +118,14 @@ function travelmap_edit_row(row) {
 
 
 function travelmap_exit_row_editing(row) {
-	jQuery('td', row).not(':first, :eq(7), :eq(8)').each(function() {
+	jQuery('td', row).not(':eq(0), :eq(1), :eq(8), :eq(9)').each(function() {
          jQuery(this).text(
 				jQuery('input', this).attr('value')
 			);
 	});
 
-	var lat = jQuery("td:eq(5)", row).text();
-	var lng = jQuery("td:eq(6)", row).text();
+	var lat = jQuery("td:eq(6)", row).text();
+	var lng = jQuery("td:eq(7)", row).text();
 
 	if (!lat.length || !lng.length) {
 		var address = jQuery("td:eq(1)", row).text()+', '+jQuery("td:eq(2)", row).text();
@@ -134,12 +147,12 @@ function travelmap_save_table() {
 	nonce = jQuery("#travelmap-admin-table thead").attr('class');
 
 	jQuery("#travelmap-admin-table tbody > tr").each(function (i, tr) {
-		places += jQuery("td:eq(1)", this).text()+',';
 		places += jQuery("td:eq(2)", this).text()+',';
 		places += jQuery("td:eq(3)", this).text()+',';
 		places += jQuery("td:eq(4)", this).text()+',';
 		places += jQuery("td:eq(5)", this).text()+',';
-		places += jQuery("td:eq(6)", this).text()+';';
+		places += jQuery("td:eq(6)", this).text()+',';
+		places += jQuery("td:eq(7)", this).text()+';';
 	});
 
 	var data = {
@@ -167,8 +180,8 @@ function travelmap_geocode(address, row) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var lat = results[0].geometry.location.b;
 			var lng = results[0].geometry.location.c;
-			jQuery("td:eq(5)", row).text(lat);
-			jQuery("td:eq(6)", row).text(lng);
+			jQuery("td:eq(6)", row).text(lat);
+			jQuery("td:eq(7)", row).text(lng);
 			jQuery('.edit.button-primary', row).text('Saving...');
 			travelmap_save_table();
 		} else {

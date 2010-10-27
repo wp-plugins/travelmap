@@ -65,7 +65,7 @@ function drawConnector(locations, color) {
 	var connector = new google.maps.Polyline({
 		path: locations,
 		strokeColor: color,
-		strokeOpacity: 0.8,
+		strokeOpacity: 0.75,
 		strokeWeight: 3
 	});
 

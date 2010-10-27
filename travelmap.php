@@ -3,7 +3,7 @@
 Plugin Name: Travelmap
 Plugin URI: http://travelingswede.com/travelmap/
 Description: Shows your travel plans as a map
-Version: 1.2
+Version: 1.3
 Author: Marcus Andersson
 Author URI: http://travelingswede.com
 License: GPL2
@@ -16,17 +16,21 @@ function travelmap_show_map( $atts ) {
 	// TODO: Add shortcodes for turning pins/lines on/off and select color for pins/lines
 	extract( shortcode_atts( array(
 		'height' => '300',
+		'first'  => 1,
+		'last'   => false
 	), $atts ) );
 
 
 	// Outputs variables neded by later js-files
 	$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
-	if ( ! is_array($places) )
+	if ( ! is_array( $places ) )
 		return;
+
+	$places = travelmap_filter_places( $places, $first, $last );
 
 	?>
 	<script type="text/javascript">
-	var travelmap_places = <?php echo json_encode( $places ); ?>;
+	var travelmap_places = <?php echo json_encode( $places ); ?>
 	</script>
 	<?php
 
@@ -40,7 +44,12 @@ function travelmap_show_map( $atts ) {
 }
 
 
-function travelmap_show_list() {
+function travelmap_show_list( $atts ) {
+
+	extract( shortcode_atts( array(
+		'first'  => 1,
+		'last'   => false
+	), $atts ) );
 
 	$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
 	$i = 0;
@@ -49,6 +58,8 @@ function travelmap_show_list() {
 
 	if ( ! is_array($places) )
 		return;
+
+	$places = travelmap_filter_places( $places, $first, $last );
 
 	foreach ( $places as $place ) {
 
@@ -75,6 +86,16 @@ function travelmap_show_list() {
 	}
 
 	return '<table id="travelmap-list">' . $list . '</table>';
+}
+
+
+// Filter array of places to only contain entries between $first and $last from shortcode atts
+function travelmap_filter_places( $places, $first, $last ) {
+
+	if ( !$last )
+		$last = count( $places );
+
+	return array_slice( $places, $first-1, $last-($first-1) );
 }
 
 
@@ -145,6 +166,7 @@ function travelmap_options() {
 		<thead class="<?php echo wp_create_nonce( 'travelmap' );?>">
 			<tr>
 				<th scope="col" class="handle manage-column"></th>
+				<th scope="col" class="count manage-column"></th>
 				<th scope="col" class="city manage-column">City</th>
 				<th scope="col" class="country manage-column">Country</th>
 				<th scope="col" class="url manage-column">URL</th>
@@ -160,9 +182,11 @@ function travelmap_options() {
 			$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
 			if ( is_array($places) ) {
 				foreach ( $places as $place ) {
+					$i++;
 					echo
 					'<tr class="' . $place['status'] . '">
 						<td class="handle"><span class="image"></span></td>
+						<td class="count"> '. $i . '</td>
 						<td class="city">' . $place['city'] . '</td>
 						<td class="country">' . $place['country'] . '</td>
 						<td class="url">' . $place['url'] . '</td>
@@ -184,6 +208,10 @@ function travelmap_options() {
 
 
 function travelmap_ajax_save() {
+
+	if ( !current_user_can( 'manage_options' ) )  {
+		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+	}
 
 	// Check nonce
 	if ( ! wp_verify_nonce($_POST['nonce'], 'travelmap') ) {

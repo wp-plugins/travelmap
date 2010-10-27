@@ -33,12 +33,19 @@
 #travelmap-admin-table .handle {
 	width:16px;
 	padding-right:0px;
+	color:#666;
 }
 #travelmap-admin-table .handle .image {
 	display:inline-block;
 	height:16px;
 	width:16px;
 	background:url(img/transform_move.png) no-repeat center;
+	vertical-align:middle;
+}
+#travelmap-admin-table .count {
+	width:2em;
+	padding-right:0px;
+	text-align:right;
 }
 #travelmap-admin-table .city {
 	width:17%;
