@@ -3,7 +3,7 @@
 Plugin Name: Travelmap
 Plugin URI: http://travelingswede.com/travelmap/
 Description: Shows your travel plans as a map
-Version: 1.3
+Version: 1.3.1
 Author: Marcus Andersson
 Author URI: http://travelingswede.com
 License: GPL2
