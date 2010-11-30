@@ -3,7 +3,7 @@ Contributors: mediascreen
 Tags: travel,map,maps,travel blog,travel plan,Google maps,geocoding,location,round the world trip
 Requires at least: 2.7
 Tested up to: 3.0.1
-Stable tag: 1.3
+Stable tag: 1.3.1
 
 Generates a map of your travels in any post or page based on a list of places.
 
@@ -46,6 +46,9 @@ That would make more sense. Unfortunately the Google API that Travelmap uses to 
 Yes, version 1.3+ supports showing subsets of your list of places (look under installation). This can be used to display different trips, but I think it would be confusing to manage more than a few trips this way.
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed geocoding bug. Changed to using LatLng functions instead of private variables.
 
 = 1.3 =
 * Added shortcodes for showing subset of places in maps and lists

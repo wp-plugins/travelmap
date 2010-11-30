@@ -178,8 +178,8 @@ function travelmap_geocode(address, row) {
 	var geocoder = new google.maps.Geocoder();
 	geocoder.geocode( { 'address': address}, function(results, status) {
 		if (status == google.maps.GeocoderStatus.OK) {
-			var lat = results[0].geometry.location.b;
-			var lng = results[0].geometry.location.c;
+			var lat = results[0].geometry.location.lat();
+			var lng = results[0].geometry.location.lng();
 			jQuery("td:eq(6)", row).text(lat);
 			jQuery("td:eq(7)", row).text(lng);
 			jQuery('.edit.button-primary', row).text('Saving...');
