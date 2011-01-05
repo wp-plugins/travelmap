@@ -3,7 +3,7 @@
 Plugin Name: Travelmap
 Plugin URI: http://travelingswede.com/travelmap/
 Description: Shows your travel plans as a map
-Version: 1.3.1
+Version: 1.4
 Author: Marcus Andersson
 Author URI: http://travelingswede.com
 License: GPL2
@@ -17,20 +17,26 @@ function travelmap_show_map( $atts ) {
 	extract( shortcode_atts( array(
 		'height' => '300',
 		'first'  => 1,
-		'last'   => false
+		'last'   => false,
+		'markers'=> true,
+		'lines'  => true
 	), $atts ) );
 
 
 	// Outputs variables neded by later js-files
 	$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
-	if ( ! is_array( $places ) )
-		return;
 
 	$places = travelmap_filter_places( $places, $first, $last );
+	if ($places === false)
+		return;
+
 
 	?>
 	<script type="text/javascript">
-	var travelmap_places = <?php echo json_encode( $places ); ?>
+	var travelmap_places = <?php echo json_encode( $places ); ?>;
+	var travelmap_plugin_dir = "<?php echo travelmap_get_plugin_path();?>";
+	var travelmap_markers = "<?php echo $markers;?>";
+	var travelmap_lines = "<?php echo $lines;?>";
 	</script>
 	<?php
 
@@ -52,8 +58,7 @@ function travelmap_show_list( $atts ) {
 	), $atts ) );
 
 	$places = travelmap_string_to_array( get_option( 'travelmap_data' ) );
-	$i = 0;
-	$letters = 'ABCDEFGHIJKLMNOPQRSTUVXYZ';
+	$i = 1;
 	$list = '<tr><th></th><th>Destination</th><th>Arrival</th></tr>';
 
 	if ( ! is_array($places) )
@@ -63,12 +68,12 @@ function travelmap_show_list( $atts ) {
 
 	foreach ( $places as $place ) {
 
-		$printdate = ( !empty( $place['arrival'] ) ) ? date_i18n( "F j, Y", strtotime( $place['arrival'] ) ) : '-';
+		$printdate = ( !empty( $place['arrival'] ) ) ? date_i18n( "F j, Y", strtotime( stripslashes( $place['arrival'] ) ) ) : '-';
 
 		if ( !empty( $place['url'] ) ) {
-			$printplace = '<a href="' . $place['url'] . '">' . $place['city'] . ', ' . $place['country'] . '</a>';
+			$printplace = '<a href="' . $place['url'] . '">' . stripslashes( $place['city'] ) . ', ' . stripslashes( $place['country'] ) . '</a>';
 		} else {
-			$printplace = $place['city'] . ', ' . $place['country'];
+			$printplace = stripslashes( $place['city'] ) . ', ' . stripslashes( $place['country'] );
 		}
 
 		// TODO: write out days in each place
@@ -77,7 +82,7 @@ function travelmap_show_list( $atts ) {
 
 		$list .= '
 			<tr class="' . $place['status'] . '">
-				<td>' . $letters[$i] . '</td>
+				<td>' . $i . '</td>
 				<td>' . $printplace . '</td>
 				<td>' . $printdate  . '</td>
 			</tr>';
@@ -91,11 +96,39 @@ function travelmap_show_list( $atts ) {
 
 // Filter array of places to only contain entries between $first and $last from shortcode atts
 function travelmap_filter_places( $places, $first, $last ) {
+	if ( ! is_array( $places ) )
+		return;
 
-	if ( !$last )
-		$last = count( $places );
+	$filteredPlaces = array();
+	
+	// If first and last is valid dates we compare dates
+	if ( isValidDate( $first ) ) {
+		if ( !isValidDate( $last ) )
+			$last = '2099-01-01';
+			
+		foreach( $places as $place ) {
+			if ( $place['arrival'] >= $first && $place['arrival'] <= $last ) {
+				$filteredPlaces[] = $place;
+			}
+			
+		}
+	// If first and last are not dates we assume they are integers
+	} else {
+		if ( !$last )
+			$last = count( $places );
 
-	return array_slice( $places, $first-1, $last-($first-1) );
+		$filteredPlaces = array_slice( $places, $first-1, $last-($first-1) );
+	}
+
+	return ( count( $filteredPlaces ) > 0 ) ? $filteredPlaces : false;
+}
+
+
+// $date has to be in ISO 8601 format, ex. 2010-12-30
+function isValidDate( $date ) {
+	$date = substr( $date, 0, 10 );
+	list( $y, $m, $d ) = explode( '-', $date );
+	return checkdate( (int)$m, (int)$d, (int)$y );
 }
 
 
@@ -187,14 +220,14 @@ function travelmap_options() {
 					'<tr class="' . $place['status'] . '">
 						<td class="handle"><span class="image"></span></td>
 						<td class="count"> '. $i . '</td>
-						<td class="city">' . $place['city'] . '</td>
-						<td class="country">' . $place['country'] . '</td>
+						<td class="city">' . stripslashes($place['city']) . '</td>
+						<td class="country">' . stripslashes($place['country']) . '</td>
 						<td class="url">' . $place['url'] . '</td>
-						<td class="arrival">' . $place['arrival'] . '</td>
+						<td class="arrival">' . stripslashes($place['arrival']) . '</td>
 						<td class="lat">' . $place['lat'] . '</td>
 						<td class="lng">' . $place['lng'] . '</td>
-						<td class="buttons1"><a class="button-secondary edit" href="#" title="Edit row">Edit</a></td>
-						<td class="buttons2"<a class="delete" href="#" title="Delete row">Delete</a></td>
+						<td class="buttons1"><a href="#" class="button-secondary edit" title="Edit row">Edit</a></td>
+						<td class="buttons2"><a href="#" class="delete" title="Delete row">Delete</a></td>
 					</tr>';
 				}
 			}
@@ -273,7 +306,7 @@ function travelmap_get_date_status( $date, $prevStatus = 'past') {
 
 
 function travelmap_add_stylesheet() {
-	wp_register_style( 'jquery-ui','http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css' );
+	wp_register_style( 'jquery-ui','http://ajax.googleapis.com/ajax/libs/jqueryui/1.7/themes/base/jquery-ui.css' );
 	wp_register_style( 'travelmap', travelmap_get_plugin_path() . 'screen.css' );
 	wp_enqueue_style( 'jquery-ui' );
 	wp_enqueue_style( 'travelmap' );

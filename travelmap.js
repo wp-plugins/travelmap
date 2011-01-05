@@ -4,16 +4,15 @@ var travelmap_options = {
 		future:'#E70072'
 	},
 	markerColor: {
-		past:'#0093DB',
-		present:'#000000',
-		future:'#E70072'
+		past:'b',
+		present:'k',
+		future:'p'
 	}
 };
 
 
 function initialize() {
 
-	travelmap_alphabet = ("ABCDEFGHIJKLMNOPQRSTUVXYZ").split("");
 	travelmap_status = 'past';
 	var locations = {past: [], future: []};
 	var futureLocations = [];
@@ -36,7 +35,7 @@ function initialize() {
 					 i,
 					 travelmap_options.markerColor[travelmap_places[i].status]);
 
-		// Add position propper line array
+		// Add position to propper line array
 		if (travelmap_places[i].status == 'past') {
 			locations['past'].push(location);
 		} else if (travelmap_places[i].status == 'present') {
@@ -51,10 +50,12 @@ function initialize() {
 
 	}
 
-	// Draw two polylines (past and future)
-	drawConnector(locations.past, travelmap_options.lineColor.past)
-	drawConnector(locations.future, travelmap_options.lineColor.future)
-
+	if (travelmap_lines == true) {
+		// Draw two polylines (past and future)
+		drawConnector(locations.past, travelmap_options.lineColor.past)
+		drawConnector(locations.future, travelmap_options.lineColor.future)
+	}
+	
 	// Set center and zoom depending on marker position
 	travelmap_map.fitBounds(markerBounds);
 }
@@ -74,18 +75,25 @@ function drawConnector(locations, color) {
 
 
 function addMarker(location, title, i, color) {
+	if (travelmap_markers == "false" || travelmap_markers == false) return;
 
-	if (i < 25) {
-		icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld='+travelmap_alphabet[i]+'|'+color.substring(1)+'|FFFFFF';
+	var zindex = i;
+	if (color == 'k') zindex = 999;
+
+	if (i < 100) {
+		iconurl = travelmap_plugin_dir+'img/markers/'+color+(i+1)+'.png';
 	} else {
-		icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=glyphish_airplane|'+color.substring(1);
+		iconurl = travelmap_plugin_dir+'img/markers/'+color+'.png';
 	}
+	
+	var icon = new google.maps.MarkerImage(iconurl, null, null, new google.maps.Point(2, 23));
 
 	marker = new google.maps.Marker({
    	position: location,
    	map: travelmap_map,
 		title: title,
-		icon: icon
+		icon: icon,
+		zIndex: zindex
 	});
 
 	marker.setMap(travelmap_map);

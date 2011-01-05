@@ -2,8 +2,8 @@
 Contributors: mediascreen
 Tags: travel,map,maps,travel blog,travel plan,Google maps,geocoding,location,round the world trip
 Requires at least: 2.7
-Tested up to: 3.0.1
-Stable tag: 1.3.1
+Tested up to: 3.0.4
+Stable tag: 1.4
 
 Generates a map of your travels in any post or page based on a list of places.
 
@@ -25,7 +25,7 @@ Add arrival dates to automatically show your current position and where you have
    `[travelmap-map height=400]`  
    For the list:  
    `[travelmap-list]`
-1. Add places you want to show.
+1. Add places you want to show. You will find the plugin options page under settings>Travelmap
 
 = Showing partial maps/lists =
 Your can show only some of your places by using shortcode attributes first and/or last. This is handy if you have done several trips and want to show them in separate posts or pages.  
@@ -35,23 +35,35 @@ This works for the list as well:
 
 The numbers are the row numbers from the plugin options page. Different maps can have overlapping numbers. If you add places before the row you have used as first attribute somewhere you obviously need to change that attribute.
 
-== FAQ ==
-= I really hate the colors for the markers and lines. Can I change them? =
-Sure, you will find them at the top of travelmap.js. Remember that you will have to change them again after every upgrade.
+You can also use dates to show partial maps. Use first and last with dates instead:  
+`[travelmap-map first=2010-01-01 last=2010-12-31]`
 
-= Why are the markers not numbered? =
-That would make more sense. Unfortunately the Google API that Travelmap uses to make the markers only support letters. They are mainly there to indicate direction of the trip so I don't think it matters that much, but let me know if you know of a better solution.
+The 'last' parameter is optional in both cases.
 
-= Can I show multiple trips? =
-Yes, version 1.3+ supports showing subsets of your list of places (look under installation). This can be used to display different trips, but I think it would be confusing to manage more than a few trips this way.
+= Hiding lines or markers =
+It is possible to turn of either markers or lines in the map by setting them to false in the options:
+`[travelmap-map lines=false]`
+`[travelmap-map markers=false]`
 
 == Changelog ==
+
+= 1.4 =
+* Fixed a bug that affected the deletion of rows in IE
+* Fixed a major geocoding bug that could cause some pretty random geocoding results
+* Fixed a bug that could cause extra slashes to appear in city and coutry fields
+* Fixed a minor bug that could cause the datepicker widget to disappear
+* Added custom markers for 1-99 in tree different colors to replace the standard lettered marker
+* Added possibility to split maps/lists based on dates as well as row order
+* Added shortcode options for hiding markers or lines
+* Added autofocus on first input field when editing or adding row
+* Added save on enter/return when editing fields
+* Adjusted z-index to ensure that the (black) current marker always never is hidden by other markers
 
 = 1.3.1 =
 * Fixed geocoding bug. Changed to using LatLng functions instead of private variables.
 
 = 1.3 =
-* Added shortcodes for showing subset of places in maps and lists
+* Added shortcode options for showing subset of places in maps and lists
 * Added row numbering to list in options page
 * Improved security checks before saving data
 

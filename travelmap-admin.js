@@ -39,6 +39,7 @@ function travelmap_init() {
 		);
 
 		travelmap_refresh_count()
+		jQuery('#travelmap-admin-table input:first').focus();
 
 		return false;
 	});
@@ -52,6 +53,14 @@ function travelmap_init() {
 
 		travelmap_exit_row_editing(row);
 		return false;
+	});
+	// Detect enter press to save row
+	jQuery('#travelmap-admin-table input').live('keypress', function(e) {
+		if(e.which == 13){
+			var row = jQuery(this).closest('tr');
+			travelmap_exit_row_editing(row);
+			return false;
+		}
 	});
 
 
@@ -94,7 +103,7 @@ function travelmap_init() {
 
 }
 
-
+// Updates numbering of rows when reordering
 function travelmap_refresh_count() {
 	var i = 1;
 	jQuery('#travelmap-admin-table tbody td.count').each(function(){
@@ -105,30 +114,31 @@ function travelmap_refresh_count() {
 
 
 function travelmap_edit_row(row) {
-    jQuery('td', row).not(':eq(0), :eq(1), :eq(8), :eq(9)').each(function() {
+    jQuery('td', row).not('.handle, .count, .buttons1, .buttons2').each(function() {
          jQuery(this).html('<input type="text" value="' + jQuery(this).html() + '" />');
     });
 	 jQuery('.edit.button-secondary', row).toggleClass('button-secondary button-primary').text('Save');
 
 	// Load datepicker
 	jQuery(".arrival input").datepicker({dateFormat: 'yy-mm-dd', duration: 'fast'});
+	jQuery('input:first', row).focus();
 
 	 // TODO: Save previous info for cancel/esc
 }
 
-
+// TODO: Exit on esc
 function travelmap_exit_row_editing(row) {
-	jQuery('td', row).not(':eq(0), :eq(1), :eq(8), :eq(9)').each(function() {
+	jQuery('td', row).not('.handle, .count, .buttons1, .buttons2').each(function() {
          jQuery(this).text(
 				jQuery('input', this).attr('value')
 			);
 	});
 
-	var lat = jQuery("td:eq(6)", row).text();
-	var lng = jQuery("td:eq(7)", row).text();
+	var lat = jQuery(".lat", row).text();
+	var lng = jQuery(".lng", row).text();
 
 	if (!lat.length || !lng.length) {
-		var address = jQuery("td:eq(1)", row).text()+', '+jQuery("td:eq(2)", row).text();
+		var address = jQuery(".city", row).text()+', '+jQuery(".country", row).text();
 		travelmap_geocode(address, row);
 		jQuery('.edit.button-primary', row).text('Geocoding...');
 	} else {
@@ -189,7 +199,6 @@ function travelmap_geocode(address, row) {
 		}
 	});
 }
-
 
 
 travelmap_init();
