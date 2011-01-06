@@ -52,7 +52,7 @@ It is possible to turn of either markers or lines in the map by setting them to 
 * Fixed a major geocoding bug that could cause some pretty random geocoding results
 * Fixed a bug that could cause extra slashes to appear in city and coutry fields
 * Fixed a minor bug that could cause the datepicker widget to disappear
-* Added custom markers for 1-99 in tree different colors to replace the standard lettered marker
+* Added custom markers for 1-99 in three different colors to replace the standard lettered marker
 * Added possibility to split maps/lists based on dates as well as row order
 * Added shortcode options for hiding markers or lines
 * Added autofocus on first input field when editing or adding row
