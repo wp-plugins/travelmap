@@ -13,6 +13,8 @@ function travelmap_init() {
 		var row = jQuery(this).closest('tr');
 
 		travelmap_edit_row(row);
+		activate_row(row);
+		
 		return false;
 	});
 
@@ -29,17 +31,18 @@ function travelmap_init() {
 				'<td class="count"></td>'+
 				'<td class="city"><input type="text" /></td>'+
 				'<td class="country"><input type="text" /></td>'+
-				'<td class="url"><input type="text" /></td>'+
-				'<td class="arrival"><input type="text" /></td>'+
-				'<td class="lat"><input type="text" /></td>'+
-				'<td class="lng"><input type="text" /></td>'+
+				'<td class="url"><input type="text" placeholder="http://" /></td>'+
+				'<td class="arrival"><input type="text" placeholder="optional" /></td>'+
+				'<td class="lat"><input type="text" placeholder="optional" /></td>'+
+				'<td class="lng"><input type="text" placeholder="optional" /></td>'+
 				'<td class="buttons1"><a class="button-primary edit" href="#" title="Save row">Save</a></td>'+
 				'<td class="buttons2"<a class="delete" href="#" title="Delete row">Delete</a></td>'+
 			'</tr>'
 		);
 
-		travelmap_refresh_count()
-		jQuery('#travelmap-admin-table input:first').focus();
+		var row = jQuery('tr:last', '#travelmap-admin-table');
+		travelmap_refresh_count();
+		activate_row(row);
 
 		return false;
 	});
@@ -99,8 +102,16 @@ function travelmap_init() {
 	});
 
 
+}
 
-
+// Load datepicker and focus on first input
+function activate_row(row) {
+	jQuery('.arrival input', row).datepicker({
+		dateFormat: 'yy-mm-dd', 
+		duration: 'fast'}
+	);
+	
+	jQuery('input:first', row).focus();
 }
 
 // Updates numbering of rows when reordering
@@ -118,10 +129,6 @@ function travelmap_edit_row(row) {
          jQuery(this).html('<input type="text" value="' + jQuery(this).html() + '" />');
     });
 	 jQuery('.edit.button-secondary', row).toggleClass('button-secondary button-primary').text('Save');
-
-	// Load datepicker
-	jQuery(".arrival input").datepicker({dateFormat: 'yy-mm-dd', duration: 'fast'});
-	jQuery('input:first', row).focus();
 
 	 // TODO: Save previous info for cancel/esc
 }
@@ -190,14 +197,19 @@ function travelmap_geocode(address, row) {
 		if (status == google.maps.GeocoderStatus.OK) {
 			var lat = results[0].geometry.location.lat();
 			var lng = results[0].geometry.location.lng();
-			jQuery("td:eq(6)", row).text(lat);
-			jQuery("td:eq(7)", row).text(lng);
+			jQuery("td:eq(6)", row).text(dec_round(lat, 6));
+			jQuery("td:eq(7)", row).text(dec_round(lng, 6));
 			jQuery('.edit.button-primary', row).text('Saving...');
 			travelmap_save_table();
 		} else {
-			alert("Geocode was not successful for the following reason: " + status);
+			alert("Geocoding was not successful: " + status);
 		}
 	});
+}
+
+function dec_round(value, decimals) {
+	var power = Math.pow(10, decimals || 0);
+	return String(Math.round(value * power) / power);
 }
 
 

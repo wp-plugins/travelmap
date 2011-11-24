@@ -19,7 +19,7 @@ function initialize() {
 	var markersArray = [];
 
 	var options = {
-		mapTypeId: google.maps.MapTypeId.ROADMAP
+		mapTypeId: google.maps.MapTypeId[travelmap_maptype]
 	};
 
 	travelmap_map = new google.maps.Map(document.getElementById("travelmap"), options);
@@ -30,10 +30,13 @@ function initialize() {
 
 		// Create and place new marker
 		var location = new google.maps.LatLng(travelmap_places[i].lat, travelmap_places[i].lng);
-		addMarker(location,
-					 travelmap_places[i].city+', '+travelmap_places[i].country,
-					 i,
-					 travelmap_options.markerColor[travelmap_places[i].status]);
+		addMarker(
+			location,
+			travelmap_places[i].city+', '+travelmap_places[i].country,
+			i,
+			travelmap_options.markerColor[travelmap_places[i].status],
+			travelmap_places[i].url
+		);
 
 		// Add position to propper line array
 		if (travelmap_places[i].status == 'past') {
@@ -47,7 +50,6 @@ function initialize() {
 
 		// Extend markerBounds with each random point.
 		markerBounds.extend(location);
-
 	}
 
 	if (travelmap_lines == true) {
@@ -74,13 +76,13 @@ function drawConnector(locations, color) {
 }
 
 
-function addMarker(location, title, i, color) {
-	if (travelmap_markers == "false" || travelmap_markers == false) return;
+function addMarker(location, title, i, color, url) {
+	if (travelmap_markers == false) return;
 
 	var zindex = i;
 	if (color == 'k') zindex = 999;
 
-	if (i < 100) {
+	if (travelmap_numbers === true && i < 100) {
 		iconurl = travelmap_plugin_dir+'img/markers/'+color+(i+1)+'.png';
 	} else {
 		iconurl = travelmap_plugin_dir+'img/markers/'+color+'.png';
@@ -95,8 +97,16 @@ function addMarker(location, title, i, color) {
 		icon: icon,
 		zIndex: zindex
 	});
+	marker.url = url;
 
 	marker.setMap(travelmap_map);
+	
+	// Add event listener to marker
+	google.maps.event.addListener(marker, "click", function() {
+		if (this.url.length) {
+			window.location = this.url;
+		}
+	});
 }
 
 
